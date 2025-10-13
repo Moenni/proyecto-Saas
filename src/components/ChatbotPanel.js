@@ -24,12 +24,25 @@ function ChatbotPanel({ visible, onClose }) {
      }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     const r = responder(mensaje);
     setRespuesta(r);
     setMensaje('');
-  };
+    try{
+      await fetch('http://localhost:5678/webhook-test/chatbot-interaccion',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          mensaje,
+          respuesta:r,
+          timestamp:new Date().toISOString()
+      })
+    });
+    }catch(error){
+      console.error('Error al enviar a n8n:',error);
+  }
+};
 
   if (!visible) return null;
 
